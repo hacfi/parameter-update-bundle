@@ -54,6 +54,8 @@ class hacfiParameterUpdateExtension extends ConfigurableExtension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
+        $loader->load('services.yml');
+
         $container->setParameter($this->getAlias().'.config', $mergedConfig);
     }
 }

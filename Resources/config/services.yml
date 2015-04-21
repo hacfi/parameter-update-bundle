@@ -1,0 +1,3 @@
+services:
+    hacfi_parameter_update.yaml_updater:
+        class: 'hacfi\ParameterUpdateBundle\Service\YamlUpdater'

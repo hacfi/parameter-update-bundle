@@ -33,9 +33,6 @@ class UpdateParameterCommand extends ContainerAwareCommand
     {
         $config = $this->getContainer()->getParameter('hacfi_parameter_update.config');
 
-        $yamlParser = new Parser();
-        $accessor = PropertyAccess::createPropertyAccessor();
-
         if (null !== ($parameter = $input->getArgument('parameter'))) {
             $parameters = [$parameter];
         } else {
@@ -64,25 +61,6 @@ class UpdateParameterCommand extends ContainerAwareCommand
 
             if (strpos($parameterConfig['parameters_key'], '[') === false) {
                 $parameterConfig['parameters_key'] = '['.$parameterConfig['parameters_key'].']';
-            }
-
-            $exists = is_file($parameterConfig['parameters_file']);
-
-            $configValues = [];
-
-            $accessor->setValue($configValues, $parameterConfig['parameters_key'], []);
-
-            if ($exists) {
-                $existingValues = $yamlParser->parse(file_get_contents($parameterConfig['parameters_file']));
-                if ($existingValues === null) {
-                    $existingValues = [];
-                }
-                if (!is_array($existingValues)) {
-                    $output->writeln(sprintf('<error>Parameters file "%s" does not contain an array</error>', $parameterConfig['parameters_file']));
-
-                    return 1;
-                }
-                $configValues = array_merge($configValues, $existingValues);
             }
 
             $service = $parameterConfig['service'];
@@ -127,13 +105,14 @@ class UpdateParameterCommand extends ContainerAwareCommand
                 $propertyPath = '['.$propertyPath.']';
             }
 
-            $accessor->setValue($configValues, $parameterConfig['parameters_key'].$propertyPath, $value);
+            $this->getContainer()->get('hacfi_parameter_update.yaml_updater')->updateValue($parameterConfig['parameters_file'], $parameterConfig['parameters_key'].$propertyPath, $value);
+            try {
+            } catch (\Exception $e) {
+                $output->writeln(sprintf('<error>Could not write value %s at property path <comment>%s</comment> in file %s</error>', $value, $parameterConfig['parameters_key'].$propertyPath, $parameterConfig['parameters_file']));
+                $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
 
-            if (!is_dir($dir = dirname($parameterConfig['parameters_file']))) {
-                mkdir($dir, 0755, true);
+                throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
             }
-
-            file_put_contents($parameterConfig['parameters_file'], Yaml::dump($configValues, 99));
         }
 
         return 0;
