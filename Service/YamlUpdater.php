@@ -19,13 +19,13 @@ class YamlUpdater
     /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessor
      */
-    var $accessor;
+    protected $accessor;
 
 
     /**
      * @var Parser
      */
-    var $yamlParser;
+    protected $yamlParser;
 
     public function __construct()
     {
