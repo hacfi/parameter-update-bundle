@@ -1,0 +1,22 @@
+{
+    "name": "hacfi/parameter-update-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony Parameter Update Bundle",
+    "keywords": ["symfony", "config", "parameters"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name":"Philipp Wahala",
+            "email":"philipp.wahala@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "symfony/framework-bundle": "~2.2"
+    },
+    "autoload":{
+        "psr-4":{
+            "hacfi\\ParameterUpdateBundle\\": ""
+        }
+    }
+}
